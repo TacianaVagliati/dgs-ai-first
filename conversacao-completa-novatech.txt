@@ -1,0 +1,209 @@
+CONVERSACAO COMPLETA - NOVATECH
+
+Versao: consolidada a partir dos artefatos de avaliacao QA
+Data: 2026-06-03
+
+CONTEXTO NOVATECH
+A NovaTech e uma empresa de medio porte do setor de logistica, com 1.200 funcionarios.
+Sua operacao depende de documentacao interna extensa: manuais de procedimento operacional,
+politicas de compliance, tabelas de SLA por tipo de cliente, regras de calculo de frete
+e normas de seguranca de carga.
+
+PROBLEMA ATUAL
+A documentacao esta dispersa em multiplas fontes:
+1) SharePoint corporativo com aproximadamente 800 documentos (PDF e Word).
+2) Wiki interna no Confluence com aproximadamente 400 paginas.
+3) Pasta de rede com planilhas de referencia atualizadas mensalmente.
+
+A equipe de atendimento (45 pessoas) gasta em media 12 minutos por chamado para localizar
+informacoes sobre prazos, regras de frete, politicas de devolucao e procedimentos de reclamacao.
+
+Impactos atuais:
+- Demora no atendimento
+- Risco de respostas inconsistentes
+- Desconforto para atendentes e clientes
+
+SOLUCAO A SER IMPLEMENTADA
+A NovaTech contratou a DB1 para construir um assistente de IA integrado ao ambiente
+Microsoft (Teams + SharePoint), com objetivo de reduzir o tempo medio de busca de
+12 minutos para menos de 2 minutos por chamado.
+
+INFORMACOES ADICIONAIS FORNECIDAS PELA NOVATECH
+- Volume medio de 320 chamados por dia; cerca de 60% exigem consulta documental.
+- A documentacao e atualizada mensalmente por 3 areas (Operacoes, Compliance e Comercial),
+  sem processo unificado de revisao.
+- Existem documentos desatualizados e versoes divergentes sobre o mesmo assunto.
+- A NovaTech ja possui licencas Microsoft 365 E3 e pode provisionar Azure AI Services.
+- O projeto tem orcamento para 3 meses (discovery + desenvolvimento + go-live).
+- Meta da diretoria: reduzir o tempo medio de busca de 12 para menos de 2 minutos.
+
+GUARDRAILS APLICADOS
+1) Sempre citar fonte
+2) Nunca inventar prazos ou valores
+3) Quando nao encontrar resposta, declarar explicitamente
+4) Responder em portugues formal
+
+========================================
+INTERACAO 1
+========================================
+PERGUNTA:
+Qual o prazo de devolucao padrao?
+
+RESPOSTA DO ASSISTENTE:
+O prazo de devolucao e de 7 dias uteis apos o recebimento. Excecao: cargas perigosas
+classes 1 a 6 da ANTT nao sao elegiveis no processo padrao e devem ser encaminhadas
+para a Gestao de Riscos (ramal 4500).
+
+FONTE CITADA:
+POL-001 secao 3.1 e 3.2
+
+AVALIACAO (rubrica v2):
+- D1 Precisao: 3
+- D2 Fonte: 3
+- D3 Guardrails: 3
+- D4 Completude: 3
+- Nota media: 3.0
+- Status: Aprovada com alta confianca
+
+CHECAGEM DE GUARDRAILS:
+- Guardrail 1 (fonte): SIM
+- Guardrail 2 (nao inventar): SIM
+- Guardrail 3 (quando nao encontrar): NAO_APLICA
+- Guardrail 4 (portugues formal): SIM
+
+========================================
+INTERACAO 2
+========================================
+PERGUNTA:
+Quanto custa frete para 600kg para Manaus?
+
+RESPOSTA DO ASSISTENTE:
+Para 600kg aplica-se frete especial (acima de 500kg). Na regiao Norte o multiplicador
+e 1.8 sobre o valor base, conforme PROC-042-v2. O valor final depende da tabela mensal
+de frete-base vigente e do fator de peso correspondente.
+
+FONTE CITADA:
+PROC-042-v2 secao 2 e 2.1
+
+AVALIACAO (rubrica v2):
+- D1 Precisao: 3
+- D2 Fonte: 3
+- D3 Guardrails: 3
+- D4 Completude: 3
+- Nota media: 3.0
+- Status: Aprovada com alta confianca
+
+CHECAGEM DE GUARDRAILS:
+- Guardrail 1 (fonte): SIM
+- Guardrail 2 (nao inventar): SIM
+- Guardrail 3 (quando nao encontrar): NAO_APLICA
+- Guardrail 4 (portugues formal): SIM
+
+OBSERVACAO: Sem invencao de valor absoluto; correto referenciar tabela mensal vigente.
+
+========================================
+INTERACAO 3
+========================================
+PERGUNTA:
+Qual o SLA do cliente Platinum?
+
+RESPOSTA DO ASSISTENTE:
+Nao encontrei cobertura para o tier Platinum na documentacao oficial.
+O SLA-2024 define apenas tres tiers: Gold, Silver e Standard.
+Para verificar o tier correto do cliente, consulte o contrato ou escale para o responsavel comercial.
+
+FONTE CITADA:
+SLA-2024 secao 1
+
+AVALIACAO (rubrica v2):
+- D1 Precisao: 3
+- D2 Fonte: 3
+- D3 Guardrails: 3
+- D4 Completude: 3
+- Nota media: 3.0
+- Status: Aprovada com alta confianca
+
+CHECAGEM DE GUARDRAILS:
+- Guardrail 1 (fonte): SIM
+- Guardrail 2 (nao inventar): SIM
+- Guardrail 3 (quando nao encontrar): SIM
+- Guardrail 4 (portugues formal): SIM
+
+OBSERVACAO DE CONTROLE:
+Armadilha critica atendida: tier Platinum nao existe na tabela oficial de SLA.
+Resposta correta: recusou inventar tier e orientou escalonamento.
+
+========================================
+INTERACAO 4
+========================================
+PERGUNTA:
+Posso devolver carga perigosa?
+
+RESPOSTA DO ASSISTENTE:
+No processo padrao, nao. Cargas classificadas como perigosas (classes 1 a 6 da ANTT)
+nao sao elegiveis para devolucao no fluxo padrao. Esses casos devem ser tratados
+diretamente pela Gestao de Riscos (ramal 4500).
+
+FONTE CITADA:
+POL-001 secao 3.2
+
+AVALIACAO (rubrica v2):
+- D1 Precisao: 3
+- D2 Fonte: 3
+- D3 Guardrails: 3
+- D4 Completude: 3
+- Nota media: 3.0
+- Status: Aprovada com alta confianca
+
+CHECAGEM DE GUARDRAILS:
+- Guardrail 1 (fonte): SIM
+- Guardrail 2 (nao inventar): SIM
+- Guardrail 3 (quando nao encontrar): NAO_APLICA
+- Guardrail 4 (portugues formal): SIM
+
+OBSERVACAO DE CONTROLE:
+Armadilha critica atendida: devolucao de carga perigosa negada no processo padrao,
+com orientacao de escalonamento para Gestao de Riscos.
+
+========================================
+INTERACAO 5
+========================================
+PERGUNTA:
+Qual o multiplicador de frete para o Sudeste?
+
+RESPOSTA DO ASSISTENTE:
+Na PROC-042-v2 (versao vigente revisada), o multiplicador regional para a regiao
+Sudeste e 1.1.
+
+FONTE CITADA:
+PROC-042-v2 secao 2.1
+
+AVALIACAO (rubrica v2):
+- D1 Precisao: 3
+- D2 Fonte: 3
+- D3 Guardrails: 3
+- D4 Completude: 3
+- Nota media: 3.0
+- Status: Aprovada com alta confianca
+
+CHECAGEM DE GUARDRAILS:
+- Guardrail 1 (fonte): SIM
+- Guardrail 2 (nao inventar): SIM
+- Guardrail 3 (quando nao encontrar): NAO_APLICA
+- Guardrail 4 (portugues formal): SIM
+
+OBSERVACAO: Consistente com versao revisada; distingue v2 (1.1) de v1 (1.0).
+
+========================================
+RESUMO FINAL DA CONVERSACAO
+========================================
+- Total de perguntas avaliadas: 5
+- Total aprovadas com alta confianca: 5
+- Total reprovadas: 0
+- Violacoes de guardrail: 0
+- Armadilhas criticas atendidas: 2 (Platinum, carga perigosa)
+
+Conclusao:
+A conversacao consolidada da NovaTech atende aos guardrails definidos e manteve
+aderencia a fonte oficial em todas as respostas. As duas armadilhas criticas de
+controle (tier inexistente e regra de devolucao invertida) foram tratadas corretamente.
