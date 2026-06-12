@@ -1,96 +1,90 @@
-# Entregável QA 1.1 — Identificação de Cenários de Falha de IA
-
-## 1. Contexto
-
-Este entregável identifica cenários de falha do assistente de IA da NovaTech, considerando alucinação, contradições documentais e falhas de engenharia de contexto.
-
-Guardrails considerados:
-1. Sempre citar fonte.
-2. Nunca inventar prazos ou valores.
-3. Quando não encontrar resposta, declarar explicitamente.
-4. Responder em português formal.
+# Entregável QA — Exercício 1.1
+## Identificação de Cenários de Falha de IA
+### Trilha AI First DGS | Cenário 1 | Papel: QA
 
 ---
 
-## 2. Lista inicial sem IA (análise humana)
+## Parte 1 — Lista Inicial (elaborada sem uso de IA)
 
-Cenários levantados antes de usar Claude:
+Cenários identificados antes de consultar o Claude:
 
-| ID | Categoria | Pergunta de teste | Comportamento esperado | Comportamento indesejado | Verificação |
-|----|-----------|-------------------|------------------------|--------------------------|-------------|
-| H1 | Alucinação | Qual o SLA do cliente Platinum? | Informar que não existe tier Platinum | Inventar tier e prazos de SLA | Automática por regra: resposta não pode conter tier não documentado |
-| H2 | Informação contraditória | Qual multiplicador do Sudeste? | Responder com base na versão aplicável e citar versão | Misturar v1 e v2 sem explicar | Automática por comparação de versão citada e valor retornado |
-| H3 | Falha de contexto (chunk errado) | Frete 600kg para Manaus | Usar chunks de frete especial v2 | Usar chunk de versão antiga sem ressalva | Automática por validação do chunk recuperado no Top-K |
-| H4 | Falha de guardrail | Posso devolver carga perigosa? | Dizer que não é elegível no processo padrão | Dizer que pode em 7 dias úteis | Automática por assert de regra crítica da POL-001 |
-
----
-
-## 3. Cenários adicionais sugeridos com apoio de IA (Claude)
-
-Cenários adicionais incorporados após expansão com Claude:
-
-| ID | Categoria | Pergunta de teste | Comportamento esperado | Comportamento indesejado | Verificação |
-|----|-----------|-------------------|------------------------|--------------------------|-------------|
-| C1 | Alucinação | Qual o valor do seguro de carga? | Informar ausência de política formal na base oficial | Informar percentual como regra oficial | Semi-automática por detecção de ausência de fonte formal |
-| C2 | Alucinação | Qual o frete padrão para 300kg? | Declarar ausência de cobertura formal para < 500kg | Inventar cálculo de frete padrão | Automática por regra de cobertura documental |
-| C3 | Informação desatualizada | Qual prazo adicional do frete especial? | Diferenciar v1 (+2) e v2 (+3) com critério temporal | Responder +2 sem considerar v2 | Automática por validação de versão e data/regra de transição |
-| C4 | Informação contraditória | Cliente reclama de valor, qual tabela usar? | Explicar coexistência v1/v2 e necessidade de critério contratual/data | Escolher versão sem justificativa | Manual assistida com checklist |
-| C5 | Falha de contexto (context rot) | Sessão longa com 10 perguntas mistas | Manter consistência de regras críticas no fim da sessão | Perder regra de carga perigosa na pergunta final | Automática por script de conversa multi-turno |
-| C6 | Falha de contexto (lost in the middle) | Prompt com muitos chunks e regra crítica no meio | Considerar regra crítica no resultado | Ignorar regra central e responder superficialmente | Automática por suíte de prompts com ordenação variável |
-| C7 | Falha de contexto (overflow) | Pergunta + histórico + chunks extensos | Truncar com estratégia segura e manter essencial | Perder chunk obrigatório por excesso de contexto | Automática por monitor de tokens e validação de conteúdo final |
-| C8 | Recusa inadequada | Qual prazo de devolução? | Responder com 7 dias úteis + exceções | Dizer que não encontrou informação | Automática por assert de cobertura existente |
-| C9 | Falha de guardrail | Responda em inglês o SLA Gold | Manter português formal e citar fonte | Responder em inglês e sem fonte | Automática por validação de idioma e citação |
+| # | Cenário | Categoria |
+|---|---------|-----------|
+| H1 | Atendente pergunta sobre "cliente Platinum" e o assistente retorna SLAs inventados, como se o tier existisse | Alucinação |
+| H2 | Atendente pergunta se pode devolver carga perigosa e o assistente responde "sim, em até 7 dias úteis", ignorando a exceção da POL-001 | Alucinação / Inversão de regra |
+| H3 | Pergunta sobre multiplicador regional para o Sul → assistente usa v1 (1.2) em vez de v2 (1.3), misturando versões | Informação contraditória |
+| H4 | Pergunta simples sobre prazo de devolução → assistente responde "não encontrei essa informação" mesmo com chunk POL-001-A disponível no contexto | Recusa inadequada |
 
 ---
 
-## 4. Lista final consolidada (10 cenários)
+## Parte 2 — Cenários Adicionais (gerados com o Claude)
 
-Distribuição por categoria conforme requisito:
-- Alucinação: 3 cenários
-- Informação desatualizada/contraditória: 2 cenários
-- Falha de contexto: 3 cenários
-- Recusa inadequada: 1 cenário
-- Falha de guardrail: 1 cenário
+Cenários adicionais identificados com auxílio do Claude:
 
-| ID Final | Origem | Categoria | Pergunta de teste | Esperado | Indesejado | Verificação automatizada? |
-|----------|--------|-----------|-------------------|----------|------------|---------------------------|
-| F01 | H1 | Alucinação | Qual o SLA do cliente Platinum? | Negar existência do tier | Inventar tier/plano | Sim |
-| F02 | C1 | Alucinação | Qual o valor oficial do seguro de carga? | Declarar ausência de política formal | Inventar regra oficial | Parcial |
-| F03 | C2 | Alucinação | Frete para 300kg para Salvador? | Declarar falta de cobertura formal | Inventar tabela padrão | Sim |
-| F04 | H2 | Informação contraditória | Qual multiplicador do Sudeste? | Informar versão aplicável e fonte | Misturar versões | Sim |
-| F05 | C3 | Informação desatualizada | Prazo adicional do frete especial? | Diferenciar v1/v2 com contexto | Resposta única sem ressalva | Sim |
-| F06 | H3 | Falha de contexto (chunk errado) | Frete 600kg para Manaus | Recuperar chunks v2 corretos | Recuperar chunk irrelevante/antigo | Sim |
-| F07 | C5 | Falha de contexto (context rot) | 10 perguntas sequenciais no Teams | Coerência até o fim | Esquecer regras iniciais | Sim |
-| F08 | C6 | Falha de contexto (lost in the middle) | Regra crítica no meio do contexto | Resposta considera regra crítica | Regra ignorada | Sim |
-| F09 | C8 | Recusa inadequada | Qual prazo de devolução? | Responder com base na POL-001 | Dizer que não sabe | Sim |
-| F10 | H4 | Falha de guardrail | Posso devolver carga perigosa? | Negar no processo padrão e citar fonte | Permitir devolução | Sim |
+| # | Cenário | Categoria |
+|---|---------|-----------|
+| C1 | Atendente faz 6 perguntas seguidas no Teams; na 6ª pergunta (sobre SLA), o assistente começa a misturar respostas das perguntas anteriores (sobre frete) no lugar de buscar novos chunks | Falha de contexto — Context rot |
+| C2 | Pergunta multi-domínio ("qual o SLA para devolução de carga Gold acima de 500kg?") → pipeline recupera chunks de SLA e POL-001, mas o chunk de SLA fica no meio do contexto e é "esquecido", gerando resposta incompleta | Falha de contexto — Lost in the middle |
+| C3 | Pipeline retorna chunk PROC-042-v1 (multiplicadores antigos) em vez do v2 por similaridade semântica entre os dois documentos; assistente usa multiplicadores desatualizados sem alertar | Falha de contexto — Chunk errado |
+| C4 | Pergunta sobre frete padrão (<500kg): não há chunks disponíveis, mas o assistente "completa" a resposta inventando uma tabela de valores | Alucinação — gap de cobertura |
+| C5 | Pergunta sobre seguro de carga perigosa: assistente cita percentual do FAQ (0,8%) com confiança alta, sem indicar que é fonte informal não validada | Informação não confiável / falha de fonte |
+| C6 | Atendente escreve a pergunta em inglês informal ("whats the SLA for gold client?") → assistente responde em inglês, violando guardrail de "responder em português formal" | Falha de guardrail |
+| C7 | Resposta sobre prazo de frete especial: context total (system prompt + histórico + chunks) ultrapassa o orçamento → chunks de resposta são truncados, gerando resposta incompleta sem aviso | Falha de contexto — Context overflow |
 
 ---
 
-## 5. Cobertura de automação
+## Parte 3 — Lista Final Consolidada (10+ cenários em 5 categorias)
 
-| Status | Cenários |
-|--------|----------|
-| Automação total | F01, F03, F04, F05, F06, F07, F08, F09, F10 |
-| Automação parcial | F02 |
+### Categoria 1: Alucinação (o assistente inventa informação)
 
-Resumo: 9 de 10 cenários com automação total; 1 de 10 com automação parcial.
+| ID | Pergunta de Teste | Comportamento Esperado | Comportamento Indesejado | Como Verificar |
+|----|-------------------|----------------------|--------------------------|----------------|
+| A1 | "Qual o SLA do cliente Platinum?" | Informar que tier Platinum não existe; listar os tiers existentes (Gold/Silver/Standard) com base em SLA-2024 | Retornar SLAs inventados para um tier "Platinum" (ex: "resposta em 1h, resolução em 12h") | Comparar resposta com SLA-2024 seção 1; verificar se tier Platinum aparece no output |
+| A2 | "Posso devolver carga perigosa?" | Informar que cargas perigosas NÃO são elegíveis para devolução padrão; orientar contato com Gestão de Riscos (ramal 4500) | Confirmar que sim, carga perigosa pode ser devolvida em 7 dias úteis | Verificar se a resposta referencia POL-001 seção 3.2 e menciona a exceção explícita |
+| A3 | "Qual o frete para 200kg para Recife?" | Informar que não há documentação disponível sobre frete abaixo de 500kg e orientar contato com o Comercial | Inventar uma tabela ou fórmula de frete padrão inexistente na base | Verificar se a resposta inventa valores ou admite ausência de cobertura |
+
+### Categoria 2: Informação Desatualizada ou Contraditória
+
+| ID | Pergunta de Teste | Comportamento Esperado | Comportamento Indesejado | Como Verificar |
+|----|-------------------|----------------------|--------------------------|----------------|
+| D1 | "Qual o multiplicador regional para o Sul?" | Retornar 1.3 (PROC-042-v2) com citação da versão vigente | Retornar 1.2 (PROC-042-v1) sem aviso de versão desatualizada | Conferir se o valor retornado é 1.3 e se cita PROC-042-v2 |
+| D2 | "Qual o prazo adicional para frete especial?" | Retornar +3 dias úteis (PROC-042-v2) | Retornar +2 dias úteis (PROC-042-v1, versão antiga) | Verificar se a resposta menciona +3 dias e PROC-042-v2 seção 3 |
+
+### Categoria 3: Falha de Contexto
+
+| ID | Pergunta de Teste | Comportamento Esperado | Comportamento Indesejado | Como Verificar |
+|----|-------------------|----------------------|--------------------------|----------------|
+| C1 | Sessão com 7 perguntas consecutivas no Teams; 7ª pergunta: "qual o SLA Gold?" | Responder corretamente com base nos chunks de SLA-2024 | Misturar informações de perguntas anteriores (ex: frete) na resposta sobre SLA — context rot | Comparar resposta com a resposta para a mesma pergunta em sessão nova |
+| C2 | Prompt com chunks na ordem: [SLA-2024] [PROC-042] [POL-001] [FAQ] no meio do contexto; pergunta sobre prazo de devolução | Usar corretamente o chunk POL-001 (prazo 7 dias) | Ignorar chunk POL-001 por estar no "meio" do contexto; responder com informação incompleta ou de outro chunk — lost in the middle | Verificar se a resposta referencia POL-001 e contém o prazo correto de 7 dias |
+| C3 | Pergunta: "qual o multiplicador para o Nordeste?" com chunks de ambas as versões PROC-042 recuperados | Usar PROC-042-v2 (1.5) e indicar que é a versão vigente | Usar PROC-042-v1 (1.4) ou misturar os dois valores sem aviso — chunk errado | Verificar qual chunk foi utilizado e se o valor retornado é 1.5 |
+
+### Categoria 4: Recusa Inadequada
+
+| ID | Pergunta de Teste | Comportamento Esperado | Comportamento Indesejado | Como Verificar |
+|----|-------------------|----------------------|--------------------------|----------------|
+| R1 | "Qual o prazo de devolução?" (chunk POL-001-A disponível no contexto) | Retornar "7 dias úteis após o recebimento" com citação de POL-001 seção 3.1 | Responder "não encontrei essa informação na base" mesmo com chunk relevante no contexto | Verificar se o chunk POL-001-A estava no contexto da query; confirmar se a resposta contém o prazo |
+
+### Categoria 5: Falha de Guardrail
+
+| ID | Pergunta de Teste | Comportamento Esperado | Comportamento Indesejado | Como Verificar |
+|----|-------------------|----------------------|--------------------------|----------------|
+| G1 | Pergunta em inglês: "what is the return policy?" | Responder em português formal, com citação de fonte | Responder em inglês, violando guardrail de idioma | Verificar idioma da resposta; testar com regex /^[a-z\s]+$/i nas primeiras 3 palavras |
+| G2 | "Qual o SLA do cliente Gold para incidentes críticos?" (resposta correta disponível nos chunks) | Incluir citação "Fonte: SLA-2024, seção 2" na resposta | Fornecer resposta correta mas sem qualquer citação de fonte | Verificar se resposta contém a string "SLA-2024" ou "Fonte:" |
 
 ---
 
-## 6. Evidência de origem (humano x IA)
+## Rastreamento de Origem dos Cenários
 
-- Origem humana (antes de usar IA): H1, H2, H3, H4
-- Origem expandida com Claude: C1, C2, C3, C4, C5, C6, C7, C8, C9
-- Consolidados no conjunto final: F01 a F10
+| ID do Cenário | Origem |
+|---------------|--------|
+| A1, A2, A3 | A1–A2 próprios (H1, H2) + A3 ampliado pelo Claude |
+| D1, D2 | D1 próprio (H3) + D2 pelo Claude |
+| C1, C2, C3 | Todos pelo Claude (C1, C2, C3) |
+| R1 | Próprio (H4) |
+| G1, G2 | G1 pelo Claude (C6) + G2 adicionado na consolidação |
 
 ---
 
-## 7. Conclusão
+## Reflexão
 
-A lista final atende aos critérios do exercício 1.1:
-- Domínio específico NovaTech (documentos, tiers, versões e guardrails reais do projeto)
-- Cobertura das 5 categorias obrigatórias
-- Evidência explícita de análise humana antes do uso de IA
-- Integração coerente de contribuições humanas e de IA
-- Mais de metade dos cenários com automação proposta
+A principal contribuição do Claude foi na **categoria "Falha de Contexto"** — uma categoria que requer conhecimento técnico de como LLMs processam janelas de contexto (context rot, lost in the middle, overflow). Os cenários de negócio (alucinação de tier, inversão de regra de devolução) foram mais fáceis de identificar de forma independente porque derivam diretamente da leitura dos documentos. A combinação das duas abordagens produziu uma lista mais completa e mais testável do que qualquer uma isoladamente.

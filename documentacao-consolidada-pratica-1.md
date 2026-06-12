@@ -1,181 +1,135 @@
-# Documentação Consolidada — Prática 1 (NovaTech)
-
-## 1. Objetivo
-
-Este documento consolida e organiza o conteúdo da pasta Prática 1 para servir como referência única de consulta para exercícios e avaliações.
-
-Escopo da consolidação:
-- Política de devolução
-- Procedimentos de frete especial (v1 e v2)
-- Regras de SLA por tier de cliente
-- FAQ operacional informal
-- Chunks de referência para simulação de RAG
-- Contexto pedagógico do exercício da fase 1
+# Documentação Consolidada — Prática 1
+## Trilha AI First DGS | Cenário-Âncora 1 — Fase de Entendimento e Contexto
+### Papel: QA | Participante: Taciana Vagliati
 
 ---
 
-## 2. Fontes Consideradas
+## 1. Contexto do Projeto
 
-| Arquivo | Tipo | Normativo? |
-|---------|------|------------|
-| POL-001-politica-devolucao.md | Política | Sim |
-| PROC-042-frete-especial-v1.md | Procedimento | Sim (vigência a validar) |
-| PROC-042-v2-frete-especial-revisado.md | Procedimento | Sim (versão mais recente) |
-| SLA-2024-tabela-sla-clientes.md | Tabela contratual | Sim |
-| FAQ-atendimento.md | FAQ informal | Não |
-| anexo-a-documentacao-simulada-novatech.md | Consolidado referência | Referência |
-| anexo-b-chunks-referencia-rag.md | Gabarito de chunks | Referência de teste |
-| exercicio-fase-1-entendimento.md | Enunciado pedagógico | Não |
+A **NovaTech** é uma empresa de médio porte do setor de logística com 1.200 funcionários. A equipe de atendimento ao cliente (45 pessoas) gasta em média **12 minutos por chamado** buscando informações em três fontes dispersas:
 
----
+| Fonte | Quantidade | Formato | Atualização | Responsável |
+|-------|-----------|---------|-------------|-------------|
+| SharePoint | ~800 docs | PDF, DOCX | Mensal | Operações, Compliance |
+| Confluence | ~400 páginas | HTML/Wiki | Semanal | TI, Comercial |
+| Pasta de rede | ~50 planilhas | XLSX | Mensal | Comercial |
 
-## 3. Hierarquia de Confiabilidade Recomendada
+**Meta:** Reduzir o tempo de busca de 12 para menos de 2 minutos por chamado usando um assistente de IA integrado ao Microsoft Teams + SharePoint.
 
-Para uso em atendimento e decisões operacionais, aplicar a seguinte prioridade:
-
-1. Documento normativo/contratual oficial vigente (POL, SLA, PROC com vigência clara)
-2. Procedimento oficial com ambiguidade de vigência (PROC coexistentes — verificar data)
-3. FAQ do time de atendimento (apoio prático, sem força normativa)
-
-Regras:
-- Se houver conflito entre documento oficial e FAQ: prevalece o documento oficial.
-- Se houver conflito entre dois documentos oficiais: responder com transparência e escalar para o dono do processo (Comercial/Compliance/Operações).
+**Volume:** 320 chamados/dia | ~60% envolvem consulta a documentação.
 
 ---
 
-## 4. Resumo Consolidado por Tema
+## 2. Base de Documentação Oficial da NovaTech
 
-### 4.1 Devolução de Mercadorias (POL-001)
+### 2.1 POL-001 — Política de Devolução (v3.1 | 15/01/2024)
 
-- **Prazo geral:** até 7 dias úteis após recebimento
-- **Exceções não elegíveis no processo padrão:**
-  - Cargas perigosas classes 1 a 6 ANTT
-  - Cargas refrigeradas com quebra de cadeia de frio
-  - Cargas com lacre violado (salvo exceção documentada na entrega)
-- **Para exceções:** encaminhar Gestão de Riscos (ramal 4500)
-- **Triagem do atendimento:** 4 horas úteis
-- **Coleta reversa:** até 2 dias úteis após aprovação
-- **Reembolso/crédito:** até 5 dias úteis após recebimento no CD
-- **Custos:**
-  - Erro/defeito da NovaTech: sem custo para o cliente
-  - Desistência do cliente: frete reverso por conta do cliente
-  - Fora do prazo: não elegível no fluxo padrão
+- **Prazo geral:** 7 dias úteis após recebimento confirmado no tracking (excluem-se sábados, domingos e feriados nacionais).
+- **Categorias NÃO elegíveis** para devolução padrão:
+  - Cargas perigosas classes 1–6 ANTT (Resolução ANTT nº 5.947/2021)
+  - Cargas refrigeradas com cadeia de frio rompida (>30 min fora da faixa)
+  - Cargas com lacre violado sem documentação no ato da entrega
+- **Para exceções:** contatar Gestão de Riscos — ramal 4500.
+- **Procedimento:** abertura de chamado no Portal do Cliente (portal.novatech.com.br) com CT-e + 3 fotos + motivo.
+- **Triagem:** 4 horas úteis. Coleta reversa: até 2 dias úteis após aprovação. Reembolso: até 5 dias úteis após recebimento no CD.
+- **Custos:** erro da NovaTech → sem custo; desistência do cliente → frete reverso por conta do cliente; prazo expirado → encaminhar ao Comercial.
 
-### 4.2 Frete Especial Acima de 500kg (PROC-042 v1 e v2)
+### 2.2 PROC-042 v1 — Frete Especial (v1.0 | 03/03/2023)
 
-Fórmula base (comum a v1 e v2):
-> Valor do frete = Valor base × Multiplicador regional × Fator de peso
+> ⚠️ Documento SEM indicação formal de vigência. Coexiste com PROC-042-v2.
 
-**Diferenças relevantes entre versões:**
+**Fórmula:** `Valor base × Multiplicador regional × Fator de peso`
 
-| Item | v1 | v2 |
-|------|----|----|
-| Fator de peso (faixas) | 1.0 / 1.2 / 1.5 | 1.0 / 1.15 / 1.4 |
-| Sul | 1.2 | 1.3 |
-| Sudeste | 1.0 | 1.1 |
-| Centro-Oeste | 1.3 | 1.4 |
-| Nordeste | 1.4 | 1.5 |
-| Norte | 1.6 | 1.8 |
-| Prazo adicional | +2 dias úteis | +3 dias úteis |
-| Desconto | Negociação > 10 fretes/mês | 5% (8+/mês); 10% (15+/mês) |
+| Região | Multiplicador |
+|--------|--------------|
+| Sul | 1.2 |
+| Sudeste | 1.0 |
+| Centro-Oeste | 1.3 |
+| Nordeste | 1.4 |
+| Norte | 1.6 |
 
-Disposição transitória da v2:
-- Chamados abertos antes de 01/12/2023 (em processamento): usar v1
-- Chamados novos a partir de 01/12/2023: usar v2
+**Fatores de peso (v1):** 1.0 (500–1.000kg) | 1.2 (1.001–3.000kg) | 1.5 (>3.000kg)
 
-### 4.3 SLA por Tipo de Cliente (SLA-2024)
+**Prazo adicional:** +2 dias úteis
 
-Tiers válidos: **Gold**, **Silver**, **Standard**. Não existe tier Platinum.
+### 2.3 PROC-042-v2 — Frete Especial Revisado (v2.0 | 10/11/2023)
 
-| Tipo | Gold | Silver | Standard |
-|------|------|--------|----------|
-| Chamados gerais — resposta | 2h úteis | 4h úteis | 8h úteis |
-| Chamados gerais — resolução | 24h úteis | 48h úteis | 72h úteis |
-| Incidentes críticos — resposta | 30 min | 1h | 2h |
-| Incidentes críticos — resolução | 4h | 8h | 24h |
+> ⚠️ Sem indicação formal de que substitui o v1. Ambos coexistem no SharePoint.
 
-Penalidades por violação no mês:
-- 1ª ocorrência: registro interno
-- 2ª ocorrência: crédito de 5%
-- 3ª ou mais: crédito de 10% + reunião obrigatória
+| Região | Multiplicador |
+|--------|--------------|
+| Sul | 1.3 |
+| Sudeste | 1.1 |
+| Centro-Oeste | 1.4 |
+| Nordeste | 1.5 |
+| Norte | 1.8 |
 
-### 4.4 FAQ de Atendimento
+**Fatores de peso (v2):** 1.0 (500–1.000kg) | 1.15 (1.001–3.000kg) | 1.4 (>3.000kg)
 
-O FAQ reflete experiência prática e acelera respostas operacionais, mas não é documento normativo.
+**Prazo adicional:** +3 dias úteis
 
-Uso recomendado:
-- Como apoio para contexto e linguagem de atendimento
-- Nunca como única base para decisões críticas de regra, prazo ou valor
-- Sempre cruzar com POL/PROC/SLA antes de resposta final ao cliente
+**Regra de transição:** chamados abertos antes de 01/12/2023 → usar v1; novos a partir de 01/12/2023 → usar v2.
 
----
+**Descontos de volume (v2):** ≥8 fretes/mês → 5% sobre multiplicador | ≥15 fretes/mês → 10%.
 
-## 5. Contradições Identificadas
+### 2.4 SLA-2024 — Tabela de SLA por Cliente (v2024.1 | 02/01/2024)
 
-1. PROC-042 v1 e v2 coexistem sem descontinuação formal explícita.
-2. Fatores de peso diferentes entre v1 e v2.
-3. Multiplicadores regionais diferentes entre v1 e v2 para todas as regiões.
-4. Prazo adicional do frete especial diferente (+2 vs +3 dias úteis).
-5. Critérios de desconto diferem entre v1 e v2.
-6. FAQ cita práticas sem respaldo formal para alguns temas (ex.: frete expresso para carga perigosa).
+| Tier | Critério |
+|------|---------|
+| Gold | Contrato anual >R$ 500.000 OU >200 operações/mês |
+| Silver | Contrato anual R$ 100.000–500.000 OU 50–200 operações/mês |
+| Standard | Todos os demais |
 
----
+> ⚠️ **NÃO existem outros tiers.** Tier Platinum não existe na NovaTech.
 
-## 6. Lacunas de Documentação
+| Métrica | Gold | Silver | Standard |
+|---------|------|--------|----------|
+| Resposta — chamados gerais | 2h úteis | 4h úteis | 8h úteis |
+| Resolução — chamados gerais | 24h úteis | 48h úteis | 72h úteis |
+| Resposta — incidentes críticos | 30 min | 1h | 2h |
+| Resolução — incidentes críticos | 4h | 8h | 24h |
 
-1. Política formal para carga danificada em trânsito não documentada em POL/PROC.
-2. Regras formais de seguro de carga ausentes em documento oficial (apenas no FAQ).
-3. Regras de frete padrão abaixo de 500kg não aparecem nos procedimentos analisados.
-4. Fluxo detalhado de tratamento interno da Gestão de Riscos não documentado.
+**Incidente crítico:** carga >R$100K com status desconhecido há >6h | carga perigosa com irregularidade | >5 chamados do mesmo cliente em 24h sobre o mesmo problema | risco à segurança de pessoas.
 
----
+**SLA não pausa** para incidentes críticos de clientes Gold.
 
-## 7. Diretriz Operacional para Respostas
+### 2.5 FAQ-Atendimento (documento informal — NÃO validado)
 
-Fluxo recomendado:
-1. Validar se a pergunta está coberta por POL, PROC ou SLA.
-2. Se houver duas versões conflitantes, explicitar o conflito e aplicar critério temporal/contratual.
-3. Se a pergunta só estiver no FAQ, responder com ressalva de que é prática informal e indicar validação.
-4. Se não houver cobertura documental, informar ausência e escalar.
+> ⚠️ Criado informalmente pelo time ao longo de 2 anos. Use com cautela — pode conter informações desatualizadas.
 
-Modelos de resposta segura:
-- "Com base no documento X, a regra é Y."
-- "Há coexistência de versões para este tema (v1 e v2). Para aplicar corretamente, precisamos validar data de abertura do chamado/contrato vigente."
-- "Não encontrei regra formal nos documentos oficiais para este caso; recomendo escalar para [área responsável]."
+Pontos relevantes:
+- Carga perigosa: orientar ramal 4500 (Gestão de Riscos). Não dizer que é impossível.
+- Duas versões PROC-042 coexistem — usar v2 como padrão, mas contratos antigos podem usar v1.
+- Tier Platinum não existe — cliente pode estar confundindo com programa descontinuado em 2022.
+- Seguro de carga: 0,3% (padrão) e 0,8% (perigosa) — confirmar com Comercial para contratos anteriores a 2023.
+- Carga danificada: registrar em até 48h, encaminhar para sinistros@novatech.com.br.
 
 ---
 
-## 8. Referência para RAG e Avaliação de Prompts
+## 3. Contradições Identificadas na Base
 
-Do Anexo B (chunks de referência):
-- Mapa de cobertura: pergunta → chunks esperados
-- Armadilhas propositais para teste de alucinação, conflito de versões e uso indevido de FAQ
+| ID | Documentos | Contradição |
+|----|-----------|------------|
+| C1 | PROC-042 v1 vs v2 | Multiplicadores regionais diferentes (ex: Norte: 1.6 vs 1.8) |
+| C2 | PROC-042 v1 vs v2 | Fator de peso diferente (ex: 1.001–3.000kg: 1.2 vs 1.15) |
+| C3 | PROC-042 v1 vs v2 | Prazo adicional: +2 dias vs +3 dias |
+| C4 | FAQ-32 vs docs formais | FAQ diz que carga perigosa pode ter frete expresso "com autorização", mas não há documento formal |
 
-Aplicações recomendadas:
-- Testar recuperação de chunks corretos por pergunta
-- Medir quando o assistente confunde v1 e v2
-- Verificar se o assistente recusa inventar resposta quando não há cobertura
+## 4. Gaps Identificados
 
----
-
-## 9. Checklist de Governança
-
-Para manter qualidade da base de conhecimento:
-- [ ] Definir status formal de vigência para PROC-042 v1 e v2
-- [ ] Criar política oficial para carga danificada
-- [ ] Publicar procedimento formal de seguro de carga
-- [ ] Publicar procedimento de frete padrão (< 500kg)
-- [ ] Formalizar processo de exceção da Gestão de Riscos
-- [ ] Estabelecer cadência de revisão e responsável por documento
+| ID | Descrição |
+|----|-----------|
+| G1 | Não há documento formal sobre tratamento de carga danificada em trânsito (só FAQ) |
+| G2 | Seguro de carga: apenas no FAQ, sem documento formal |
+| G3 | Frete padrão (<500kg): não há documento na base |
+| G4 | Processo da Gestão de Riscos para cargas perigosas: não documentado |
 
 ---
 
-## 10. Conclusão Executiva
+## 5. Resumo dos Exercícios QA — Cenário 1
 
-A Prática 1 contém base suficiente para os casos frequentes de devolução, frete especial e SLA, mas apresenta risco operacional por coexistência de versões e dependência de FAQ informal em temas críticos.
-
-Recomendação principal:
-- Operar com precedência de documentos oficiais
-- Explicitar conflitos quando existirem
-- Escalar casos sem cobertura formal
-- Priorizar saneamento documental para reduzir inconsistências no atendimento e em soluções de IA com RAG
+| Exercício | Título | Entregável Principal |
+|-----------|--------|---------------------|
+| 1.1 | Identificação de cenários de falha de IA | Lista de 10+ cenários em 5 categorias |
+| 1.2 | Design de critérios de aceitação | Rubrica + template + avaliação das 5 respostas |
+| 1.3 | Plano de testes para pipeline de RAG | Plano estruturado em 6 categorias + artefato Cowork |

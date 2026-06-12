@@ -1,119 +1,109 @@
-# Entregável QA 1.2 — Design de Critérios de Aceitação para Respostas de IA
-
-## 1. Contexto
-
-Este entregável define critérios objetivos para classificar respostas do assistente da NovaTech e aplica a avaliação ao lote de 5 respostas simuladas do exercício.
-
-Fonte de verdade usada para validação:
-- POL-001-politica-devolucao.md
-- PROC-042-v2-frete-especial-revisado.md
-- SLA-2024-tabela-sla-clientes.md
-- anexo-a-documentacao-simulada-novatech.md
+# Entregável QA — Exercício 1.2
+## Design de Critérios de Aceitação para Respostas de IA
+### Trilha AI First DGS | Cenário 1 | Papel: QA
 
 ---
 
-## 2. Avaliação manual inicial (antes da rubrica)
+## Parte 1 — Avaliação Manual (elaborada antes da rubrica)
 
-Classificação própria realizada antes de construir a rubrica com IA.
-
-| # | Pergunta | Julgamento manual | Justificativa baseada em fonte |
-|---|----------|-------------------|-------------------------------|
-| 1 | Qual o prazo de devolução? | Correta | POL-001 define 7 dias úteis e exceções para cargas perigosas classes 1 a 6 — resposta alinhada |
-| 2 | Quanto custa frete para 600kg para Manaus? | Correta | PROC-042-v2 aplica frete especial > 500kg; Norte com multiplicador 1.8 — sem invenção de valor absoluto |
-| 3 | Qual o SLA do cliente Platinum? | **Incorreta** | SLA-2024 define apenas Gold, Silver e Standard; Platinum **não existe** — alucinação de tier e valores |
-| 4 | Posso devolver carga perigosa? | **Incorreta** | POL-001 seção 3.2: cargas perigosas classes 1 a 6 NÃO são elegíveis no processo padrão — regra invertida |
-| 5 | Qual o multiplicador de frete para o Sudeste? | Correta | PROC-042-v2 indica Sudeste = 1.1 — versão correta citada |
+Avaliação das 5 respostas com base na documentação oficial do Anexo A, antes de criar a rubrica formal.
 
 ---
 
-## 3. Rubrica de avaliação (4 dimensões, escala 1–3)
+### Resposta 1
 
-### D1 — Precisão Factual
-- **1:** Contém erro material, alucinação ou inversão de regra
-- **2:** Núcleo correto, mas com omissão relevante (ex.: cita prazo sem citar exceção crítica)
-- **3:** Factual e semanticamente correta, alinhada à fonte oficial
+**Pergunta:** "Qual o prazo de devolução?"  
+**Resposta do assistente:** "O prazo é de 7 dias úteis, exceto para cargas perigosas classes 1 a 6 da ANTT."  
+**Fonte citada:** POL-001, seção 3.2
 
-### D2 — Citação e Rastreabilidade de Fonte
-- **1:** Sem fonte, fonte errada ou não verificável
-- **2:** Cita documento correto, mas seção insuficiente ou ambígua
-- **3:** Cita documento e trecho/seção adequados (ex.: "POL-001 seção 3.2")
+**Avaliação:** ✅ **CORRETA** (com observação menor)
 
-### D3 — Aderência a Guardrails
-- **1:** Inventa informação, não declara ausência de cobertura, ou viola idioma/forma
-- **2:** Parcialmente aderente, com pequenas falhas (ex.: cita fonte mas sem seção)
-- **3:** Totalmente aderente aos 4 guardrails
-
-### D4 — Completude e Utilidade para Atendimento
-- **1:** Resposta incompleta ou não acionável pelo atendente
-- **2:** Parcialmente acionável (responde o básico mas omite exceção relevante)
-- **3:** Resposta completa, clara e aplicável imediatamente ao atendimento
-
-**Score final:** média simples das 4 dimensões.
-
-| Score médio | Classificação |
-|-------------|---------------|
-| 2.5 a 3.0 | Aprovada com alta confiança |
-| 2.0 a 2.4 | Aprovada com ressalva |
-| abaixo de 2.0 | Reprovada |
+**Justificativa:** A informação está correta — o prazo geral de 7 dias úteis está em POL-001 seção 3.1 e a exceção para cargas perigosas em POL-001 seção 3.2. A citação da fonte está parcialmente correta (menciona o documento certo), mas aponta apenas para a seção 3.2 (exceções) quando o prazo geral vem da seção 3.1. Isso é uma imprecisão de citação, não um erro factual. A resposta é suficiente para orientar o atendente.
 
 ---
 
-## 4. Template reutilizável de avaliação (formato Cowork)
+### Resposta 2
 
-Campos obrigatórios para rastreio operacional:
+**Pergunta:** "Quanto custa frete para 600kg para Manaus?"  
+**Resposta do assistente:** "O frete especial para cargas acima de 500kg para a região Norte tem multiplicador de 1.8 sobre o valor base."  
+**Fonte citada:** PROC-042-v2, seção 2
 
-| ID | Pergunta | Resposta | Fonte citada | D1 Precisão | D2 Fonte | D3 Guardrails | D4 Completude | Média | Status | Observações |
-|----|----------|----------|--------------|-------------|----------|---------------|---------------|-------|--------|-------------|
-| QXX | ... | ... | ... | 1–3 | 1–3 | 1–3 | 1–3 | calc | Aprov/Reprov | ... |
+**Avaliação:** ✅ **CORRETA**
 
-Campos mínimos adicionais:
-- Avaliador
-- Data
-- Versão do prompt
-- Versão da base documental
-- Ação corretiva recomendada
+**Justificativa:** O multiplicador para a região Norte (que inclui Manaus/AM) na versão vigente PROC-042-v2 é de fato 1.8 (seção 2.1). A carga de 600kg está na faixa de frete especial (>500kg). O assistente usou a versão correta do documento. A resposta é factualmente precisa, cita a fonte correta e usa a versão mais recente. Uma melhoria possível seria mencionar o fator de peso (1.0 para 500–1.000kg) para dar ao atendente a fórmula completa.
 
 ---
 
-## 5. Aplicação da rubrica nas 5 respostas
+### Resposta 3
 
-| # | D1 | D2 | D3 | D4 | Média | Resultado |
-|---|----|----|----|----|-------|-----------|
-| 1 | 3 | 2 | 3 | 3 | 2.8 | Aprovada com alta confiança |
-| 2 | 3 | 2 | 3 | 2 | 2.5 | Aprovada com alta confiança |
-| 3 | 1 | 1 | 1 | 1 | 1.0 | Reprovada |
-| 4 | 1 | 1 | 1 | 1 | 1.0 | Reprovada |
-| 5 | 3 | 2 | 3 | 2 | 2.5 | Aprovada com alta confiança |
+**Pergunta:** "Qual o SLA do cliente Platinum?"  
+**Resposta do assistente:** "O cliente Platinum tem resposta em até 1h e resolução em até 12h."  
+**Fonte citada:** SLA-2024
 
-Justificativas das respostas críticas:
-- **Resposta 3:** Reprovada por alucinação de tier inexistente (Platinum) e valores de SLA inventados. Violação de guardrails 2 e 3.
-- **Resposta 4:** Reprovada por inversão explícita da regra da POL-001 seção 3.2 — carga perigosa não é elegível no processo padrão.
+**Avaliação:** ❌ **INCORRETA — Alucinação de tier e valores**
+
+**Justificativa:** O tier "Platinum" **não existe** na NovaTech. O documento SLA-2024 seção 1 é explícito: "Não existem outros tiers além dos três listados acima" (Gold, Silver, Standard). O assistente alucionou tanto o tier quanto os valores de SLA (1h/12h não correspondem a nenhum tier real). Ao citar "SLA-2024" como fonte, cria falsa impressão de legitimidade para uma informação inventada. Esta é a falha mais grave dos 5 casos — um atendente que confiar nessa resposta passará informação contratualmente incorreta ao cliente.
 
 ---
 
-## 6. Verificação das armadilhas obrigatórias
+### Resposta 4
 
-| Armadilha | Identificada? | Justificativa |
-|-----------|---------------|---------------|
-| #3 — SLA Platinum | **Sim** | Tier Platinum não existe na SLA-2024 (apenas Gold, Silver e Standard) — corretamente marcada como incorreta |
-| #4 — Devolução de carga perigosa | **Sim** | POL-001 seção 3.2 estabelece não elegibilidade — resposta do assistente inverteu a regra |
+**Pergunta:** "Posso devolver carga perigosa?"  
+**Resposta do assistente:** "Sim, cargas perigosas podem ser devolvidas em até 7 dias úteis."  
+**Fonte citada:** POL-001, seção 3.2
 
----
+**Avaliação:** ❌ **INCORRETA — Inversão de regra**
 
-## 7. Ações de melhoria recomendadas
-
-1. Incluir validação pré-resposta para tiers permitidos (Gold/Silver/Standard) — rejeitar qualquer menção a Platinum.
-2. Incluir regra dura para exceções de devolução (carga perigosa não elegível no fluxo padrão).
-3. Exigir estrutura mínima de citação com documento + seção (D2 = 3 requer "POL-001 seção X", não apenas "POL-001").
-4. Em conflito documental entre versões, responder com transparência e solicitar validação de vigência.
+**Justificativa:** POL-001 seção 3.2 é a seção de **exceções**, e a primeira exceção listada é exatamente que cargas perigosas **NÃO** são elegíveis para devolução pelo processo padrão. O assistente inverteu completamente a regra — o documento que ele cita diz exatamente o contrário do que ele afirmou. Para cargas perigosas, o procedimento correto é encaminhar ao setor de Gestão de Riscos (ramal 4500). Esta é uma falha crítica de inversão de regra, agravada pelo fato de que a fonte citada contradiz a resposta.
 
 ---
 
-## 8. Conclusão
+### Resposta 5
 
-O processo atende ao exercício 1.2:
-- Avaliação manual realizada antes da construção da rubrica
-- Rubrica objetiva com 4 dimensões e escala 1–3 descrita concretamente
-- Template reutilizável para lotes futuros (não one-off)
-- Aplicação completa às 5 respostas com justificativas baseadas nos documentos do Anexo A
-- Identificação correta das duas armadilhas obrigatórias com referência explícita à fonte
+**Pergunta:** "Qual o multiplicador de frete para o Sudeste?"  
+**Resposta do assistente:** "O multiplicador regional para o Sudeste é 1.1."  
+**Fonte citada:** PROC-042-v2, seção 2
+
+**Avaliação:** ✅ **CORRETA**
+
+**Justificativa:** O multiplicador para o Sudeste na PROC-042-v2 (versão vigente) é 1.1. O assistente usou a versão correta (v2) em vez da desatualizada (v1, que teria 1.0). A citação está correta. Esta resposta demonstra que o pipeline está recuperando e usando o documento mais recente para perguntas sobre multiplicadores regionais.
+
+---
+
+## Parte 2 — Rubrica de Avaliação (elaborada com o Claude)
+
+Ver arquivo separado: **`rubrica-avaliacao-v2-definitiva.md`**
+
+A rubrica resultante tem 4 dimensões (Precisão Factual, Citação de Fonte, Aderência aos Guardrails, Completude), escala 1–3, com critérios objetivos derivados dos documentos da NovaTech.
+
+---
+
+## Parte 3 — Pontuações Aplicadas às 5 Respostas
+
+| # | Pergunta | D1 Precisão | D2 Fonte | D3 Guardrails | D4 Completude | Score Final | Aprovação |
+|---|----------|-------------|----------|---------------|---------------|-------------|-----------|
+| 1 | Prazo de devolução | 3 | 2 | 3 | 2 | **2.5** | ✅ Aprovada |
+| 2 | Frete 600kg para Manaus | 3 | 3 | 3 | 2 | **2.75** | ✅ Aprovada |
+| 3 | SLA cliente Platinum | 1 | 1 | 1 | 1 | **1.0** | ❌ Reprovada |
+| 4 | Devolução carga perigosa | 1 | 1 | 1 | 1 | **1.0** | ❌ Reprovada |
+| 5 | Multiplicador Sudeste | 3 | 3 | 3 | 3 | **3.0** | ✅ Aprovada |
+
+---
+
+## Análise dos Resultados
+
+**Respostas aprovadas (3/5):** Respostas 1, 2 e 5 estão factualmente corretas. A Resposta 1 tem imprecisão menor de citação (seção errada); a Resposta 2 poderia incluir o fator de peso para ser mais completa.
+
+**Respostas reprovadas (2/5):** 
+- **Resposta 3** (Platinum): alucinação pura — tier inventado, valores inventados, citação falsa. Risco contratual alto.
+- **Resposta 4** (carga perigosa): inversão de regra com citação real — o documento citado contradiz diretamente a resposta. Risco operacional e de segurança.
+
+**Padrão identificado:** O assistente comete os erros mais graves justamente quando a documentação é contra-intuitiva (exceção que proíbe, ao invés de permitir) ou quando a informação simplesmente não existe na base (tier inexistente). Esses são os casos que precisam de guardrails mais fortes no pipeline.
+
+---
+
+## Recomendações para o Pipeline
+
+1. Adicionar instrução explícita no system prompt: "Se um tier de cliente não constar em SLA-2024, informe que não existe e liste os tiers disponíveis."
+2. Adicionar instrução: "Para perguntas sobre elegibilidade de devolução, sempre verifique a seção 3.2 de POL-001 antes de confirmar que a carga pode ser devolvida."
+3. Implementar verificação determinística pós-geração: checar se a resposta contém termos como "Platinum" ou "Premium" que não existem na base.

@@ -1,209 +1,172 @@
-CONVERSACAO COMPLETA - NOVATECH
+CONVERSAÇÃO COMPLETA — PRÁTICA 1 | CENÁRIO-ÂNCORA 1
+Trilha AI First DGS / DB1 Global Software
+Papel: QA | Participante: Taciana Vagliati
+================================================================================
 
-Versao: consolidada a partir dos artefatos de avaliacao QA
-Data: 2026-06-03
+Esta é a simulação das conversas conduzidas com o Claude para produzir os
+entregáveis dos exercícios 1.1, 1.2 e 1.3 do Cenário-Âncora 1.
 
-CONTEXTO NOVATECH
-A NovaTech e uma empresa de medio porte do setor de logistica, com 1.200 funcionarios.
-Sua operacao depende de documentacao interna extensa: manuais de procedimento operacional,
-politicas de compliance, tabelas de SLA por tipo de cliente, regras de calculo de frete
-e normas de seguranca de carga.
+================================================================================
+EXERCÍCIO 1.1 — Identificação de cenários de falha de IA
+================================================================================
 
-PROBLEMA ATUAL
-A documentacao esta dispersa em multiplas fontes:
-1) SharePoint corporativo com aproximadamente 800 documentos (PDF e Word).
-2) Wiki interna no Confluence com aproximadamente 400 paginas.
-3) Pasta de rede com planilhas de referencia atualizadas mensalmente.
+--- ETAPA 1: Lista inicial (sem IA) ---
 
-A equipe de atendimento (45 pessoas) gasta em media 12 minutos por chamado para localizar
-informacoes sobre prazos, regras de frete, politicas de devolucao e procedimentos de reclamacao.
+Cenários identificados antes de usar o Claude:
 
-Impactos atuais:
-- Demora no atendimento
-- Risco de respostas inconsistentes
-- Desconforto para atendentes e clientes
+H1 — Atendente pergunta sobre "cliente Platinum" → assistente retorna SLAs
+     inventados, como se o tier existisse.
 
-SOLUCAO A SER IMPLEMENTADA
-A NovaTech contratou a DB1 para construir um assistente de IA integrado ao ambiente
-Microsoft (Teams + SharePoint), com objetivo de reduzir o tempo medio de busca de
-12 minutos para menos de 2 minutos por chamado.
+H2 — Atendente pergunta se pode devolver carga perigosa → assistente responde
+     "sim, em até 7 dias úteis", ignorando a exceção da POL-001 seção 3.2.
 
-INFORMACOES ADICIONAIS FORNECIDAS PELA NOVATECH
-- Volume medio de 320 chamados por dia; cerca de 60% exigem consulta documental.
-- A documentacao e atualizada mensalmente por 3 areas (Operacoes, Compliance e Comercial),
-  sem processo unificado de revisao.
-- Existem documentos desatualizados e versoes divergentes sobre o mesmo assunto.
-- A NovaTech ja possui licencas Microsoft 365 E3 e pode provisionar Azure AI Services.
-- O projeto tem orcamento para 3 meses (discovery + desenvolvimento + go-live).
-- Meta da diretoria: reduzir o tempo medio de busca de 12 para menos de 2 minutos.
+H3 — Pergunta sobre multiplicador regional para o Sul → assistente usa v1 (1.2)
+     em vez de v2 (1.3), misturando versões.
 
-GUARDRAILS APLICADOS
-1) Sempre citar fonte
-2) Nunca inventar prazos ou valores
-3) Quando nao encontrar resposta, declarar explicitamente
-4) Responder em portugues formal
+H4 — Pergunta simples sobre prazo de devolução → assistente responde "não
+     encontrei essa informação" mesmo com chunk POL-001-A disponível.
 
-========================================
-INTERACAO 1
-========================================
-PERGUNTA:
-Qual o prazo de devolucao padrao?
+--- ETAPA 2: Prompt enviado ao Claude ---
 
-RESPOSTA DO ASSISTENTE:
-O prazo de devolucao e de 7 dias uteis apos o recebimento. Excecao: cargas perigosas
-classes 1 a 6 da ANTT nao sao elegiveis no processo padrao e devem ser encaminhadas
-para a Gestao de Riscos (ramal 4500).
+Prompt:
+"Você está ajudando um QA a identificar cenários de falha para um assistente
+de IA de atendimento da NovaTech (empresa de logística). O assistente usa RAG
+(Retrieval-Augmented Generation) com base de documentos internos. Os guardrails
+definidos são: (1) sempre citar fonte, (2) nunca inventar prazos ou valores,
+(3) quando não encontrar resposta, dizer explicitamente, (4) responder em
+português formal.
 
-FONTE CITADA:
-POL-001 secao 3.1 e 3.2
+A documentação tem problemas conhecidos: duas versões conflitantes do mesmo
+procedimento de frete (PROC-042 v1 e v2), um FAQ informal não validado, e
+ausência de documentação sobre frete abaixo de 500kg.
 
-AVALIACAO (rubrica v2):
-- D1 Precisao: 3
-- D2 Fonte: 3
-- D3 Guardrails: 3
-- D4 Completude: 3
-- Nota media: 3.0
-- Status: Aprovada com alta confianca
+Já identifiquei 4 cenários (alucinação de tier, inversão de regra de carga
+perigosa, versão desatualizada de multiplicador, recusa inadequada). Preciso
+de mais cenários, especialmente relacionados a falhas de contexto (context rot,
+lost in the middle, chunk errado, overflow). Gere pelo menos 6 cenários
+adicionais específicos ao projeto NovaTech."
 
-CHECAGEM DE GUARDRAILS:
-- Guardrail 1 (fonte): SIM
-- Guardrail 2 (nao inventar): SIM
-- Guardrail 3 (quando nao encontrar): NAO_APLICA
-- Guardrail 4 (portugues formal): SIM
+--- RESPOSTA DO CLAUDE (resumida) ---
 
-========================================
-INTERACAO 2
-========================================
-PERGUNTA:
-Quanto custa frete para 600kg para Manaus?
+O Claude identificou:
 
-RESPOSTA DO ASSISTENTE:
-Para 600kg aplica-se frete especial (acima de 500kg). Na regiao Norte o multiplicador
-e 1.8 sobre o valor base, conforme PROC-042-v2. O valor final depende da tabela mensal
-de frete-base vigente e do fator de peso correspondente.
+C1 — Context rot em sessão longa no Teams: após 6+ perguntas, resposta sobre
+     SLA começa a misturar informações de fretes mencionados anteriormente.
+     Pergunta de teste: fazer 8 perguntas consecutivas; comparar resposta 1
+     e resposta 8 para a mesma query sobre SLA Gold.
 
-FONTE CITADA:
-PROC-042-v2 secao 2 e 2.1
+C2 — Lost in the middle: contexto com 5 chunks onde POL-001 fica na posição 3;
+     LLM ignora o prazo de devolução por estar "no meio" do contexto.
 
-AVALIACAO (rubrica v2):
-- D1 Precisao: 3
-- D2 Fonte: 3
-- D3 Guardrails: 3
-- D4 Completude: 3
-- Nota media: 3.0
-- Status: Aprovada com alta confianca
+C3 — Chunk errado: PROC-042-v1 recuperado por alta similaridade semântica com
+     a v2 (mesmos termos, valores diferentes); assistente usa multiplicadores
+     desatualizados.
 
-CHECAGEM DE GUARDRAILS:
-- Guardrail 1 (fonte): SIM
-- Guardrail 2 (nao inventar): SIM
-- Guardrail 3 (quando nao encontrar): NAO_APLICA
-- Guardrail 4 (portugues formal): SIM
+C4 — Alucinação por gap: frete para 200kg (não documentado) → assistente
+     inventa tabela de valores padrão.
 
-OBSERVACAO: Sem invencao de valor absoluto; correto referenciar tabela mensal vigente.
+C5 — Fonte informal com alta confiança: FAQ cita 0,8% para seguro de carga
+     perigosa; assistente responde como se fosse regra oficial, sem indicar
+     que é fonte informal.
 
-========================================
-INTERACAO 3
-========================================
-PERGUNTA:
-Qual o SLA do cliente Platinum?
+C6 — Guardrail de idioma: pergunta em inglês → resposta em inglês violando
+     guardrail 4.
 
-RESPOSTA DO ASSISTENTE:
-Nao encontrei cobertura para o tier Platinum na documentacao oficial.
-O SLA-2024 define apenas tres tiers: Gold, Silver e Standard.
-Para verificar o tier correto do cliente, consulte o contrato ou escale para o responsavel comercial.
+C7 — Context overflow: sessão longa + chunks grandes → truncamento silencioso
+     do último chunk, gerando resposta incompleta.
 
-FONTE CITADA:
-SLA-2024 secao 1
+--- ITERAÇÃO ---
 
-AVALIACAO (rubrica v2):
-- D1 Precisao: 3
-- D2 Fonte: 3
-- D3 Guardrails: 3
-- D4 Completude: 3
-- Nota media: 3.0
-- Status: Aprovada com alta confianca
+Prompt de refinamento:
+"Para os cenários C1 (context rot) e C3 (chunk errado), defina: a pergunta de
+teste exata, o comportamento esperado, o comportamento indesejado e como
+verificar. Use o domínio específico da NovaTech (documentos POL-001, PROC-042,
+SLA-2024)."
 
-CHECAGEM DE GUARDRAILS:
-- Guardrail 1 (fonte): SIM
-- Guardrail 2 (nao inventar): SIM
-- Guardrail 3 (quando nao encontrar): SIM
-- Guardrail 4 (portugues formal): SIM
+Resposta do Claude:
+Claude detalhou os dois cenários com perguntas concretas (ex: C1: 8ª pergunta
+é "qual o SLA Gold?" após perguntas sobre frete; C3: "qual o multiplicador para
+o Nordeste?" com ambos os chunks PROC-042 no contexto).
 
-OBSERVACAO DE CONTROLE:
-Armadilha critica atendida: tier Platinum nao existe na tabela oficial de SLA.
-Resposta correta: recusou inventar tier e orientou escalonamento.
+================================================================================
+EXERCÍCIO 1.2 — Design de critérios de aceitação
+================================================================================
 
-========================================
-INTERACAO 4
-========================================
-PERGUNTA:
-Posso devolver carga perigosa?
+--- ETAPA 1: Avaliação manual das 5 respostas ---
 
-RESPOSTA DO ASSISTENTE:
-No processo padrao, nao. Cargas classificadas como perigosas (classes 1 a 6 da ANTT)
-nao sao elegiveis para devolucao no fluxo padrao. Esses casos devem ser tratados
-diretamente pela Gestao de Riscos (ramal 4500).
+(Ver entregavel-qa-1.2-criterios-aceitacao.md, Parte 1)
 
-FONTE CITADA:
-POL-001 secao 3.2
+Realizada ANTES de criar a rubrica. Conclusões:
+- Respostas 1, 2, 5: corretas
+- Resposta 3 (Platinum): alucinação de tier inexistente
+- Resposta 4 (carga perigosa): inversão de regra grave
 
-AVALIACAO (rubrica v2):
-- D1 Precisao: 3
-- D2 Fonte: 3
-- D3 Guardrails: 3
-- D4 Completude: 3
-- Nota media: 3.0
-- Status: Aprovada com alta confianca
+--- ETAPA 2: Prompt para criação da rubrica ---
 
-CHECAGEM DE GUARDRAILS:
-- Guardrail 1 (fonte): SIM
-- Guardrail 2 (nao inventar): SIM
-- Guardrail 3 (quando nao encontrar): NAO_APLICA
-- Guardrail 4 (portugues formal): SIM
+Prompt:
+"Sou QA de um projeto de IA de atendimento para logística (NovaTech). Preciso
+de uma rubrica para avaliar respostas do assistente de IA. A rubrica deve ter
+4 dimensões com escala 1-3, pensada para que dois avaliadores diferentes
+cheguem a scores similares. As dimensões precisam cobrir: (1) se a informação
+está correta conforme os documentos oficiais (POL-001, PROC-042-v2, SLA-2024),
+(2) se a fonte foi citada corretamente, (3) se os guardrails foram respeitados,
+(4) se a resposta é suficiente para resolver o chamado. Inclua critérios
+explícitos para casos como: documento contraditório (v1 vs v2), tier inexistente,
+e carga perigosa que não pode ser devolvida."
 
-OBSERVACAO DE CONTROLE:
-Armadilha critica atendida: devolucao de carga perigosa negada no processo padrao,
-com orientacao de escalonamento para Gestao de Riscos.
+--- RESPOSTA DO CLAUDE (v1 da rubrica) ---
 
-========================================
-INTERACAO 5
-========================================
-PERGUNTA:
-Qual o multiplicador de frete para o Sudeste?
+Claude gerou rubrica com 4 dimensões: Precisão, Citação, Guardrails, Completude.
+D1 nível 1 original: "contém informação incorreta".
 
-RESPOSTA DO ASSISTENTE:
-Na PROC-042-v2 (versao vigente revisada), o multiplicador regional para a regiao
-Sudeste e 1.1.
+--- ITERAÇÃO v1 → v2 ---
 
-FONTE CITADA:
-PROC-042-v2 secao 2.1
+Prompt:
+"A rubrica está boa, mas D1 nível 1 está muito genérico. Adicione critérios
+específicos para: (a) uso de versão desatualizada do documento (PROC-042 v1
+quando v2 existe), (b) citação de documento real mas que contradiz a resposta
+(como acontece com a resposta 4 sobre carga perigosa). Também em D2, o nível 2
+está vago — especifique o que conta como 'citação imprecisa'."
 
-AVALIACAO (rubrica v2):
-- D1 Precisao: 3
-- D2 Fonte: 3
-- D3 Guardrails: 3
-- D4 Completude: 3
-- Nota media: 3.0
-- Status: Aprovada com alta confianca
+Resultado: rubrica v2 com os refinamentos aplicados. Ver rubrica-avaliacao-v2-definitiva.md.
 
-CHECAGEM DE GUARDRAILS:
-- Guardrail 1 (fonte): SIM
-- Guardrail 2 (nao inventar): SIM
-- Guardrail 3 (quando nao encontrar): NAO_APLICA
-- Guardrail 4 (portugues formal): SIM
+================================================================================
+EXERCÍCIO 1.3 — Plano de testes para pipeline de RAG
+================================================================================
 
-OBSERVACAO: Consistente com versao revisada; distingue v2 (1.1) de v1 (1.0).
+--- PROMPT INICIAL ---
 
-========================================
-RESUMO FINAL DA CONVERSACAO
-========================================
-- Total de perguntas avaliadas: 5
-- Total aprovadas com alta confianca: 5
-- Total reprovadas: 0
-- Violacoes de guardrail: 0
-- Armadilhas criticas atendidas: 2 (Platinum, carga perigosa)
+Prompt:
+"Sou QA e preciso de um plano de testes para um pipeline de RAG com esta
+arquitetura: [descrição do pipeline]. A base de documentos tem problemas
+conhecidos: documentos contraditórios (PROC-042 v1 e v2), FAQ informal, e
+gaps (frete <500kg não documentado). O plano precisa cobrir: ingestão, retrieval,
+geração, contexto (context rot, lost in the middle, orçamento), ponta a ponta
+e regressão. Para retrieval, use o mapa de cobertura do Anexo B como base para
+definir os pares pergunta → chunk esperado."
 
-Conclusao:
-A conversacao consolidada da NovaTech atende aos guardrails definidos e manteve
-aderencia a fonte oficial em todas as respostas. As duas armadilhas criticas de
-controle (tier inexistente e regra de devolucao invertida) foram tratadas corretamente.
+--- RESPOSTA DO CLAUDE (resumida) ---
+
+Claude gerou estrutura com as 6 categorias. Ponto forte: sugeriu para Categoria 4
+(contexto) o método de comparar resposta 1 vs resposta 8 em sessão longa para
+medir context rot, e a abordagem de colocar o chunk correto em diferentes posições
+para testar lost in the middle.
+
+--- ITERAÇÃO ---
+
+Prompt:
+"Os critérios de aceite estão em formato de lista genérica. Transforme em tabela
+com métricas mensuráveis e valores mínimos aceitáveis (ex: % de retrieval correto,
+score mínimo E2E, tempo de resposta). Adicione também como os testes de regressão
+se organizam por gatilho (o que muda → quais testes rodar)."
+
+Claude refinou com a tabela de critérios quantitativos e a tabela de gatilhos
+de regressão. Ver plano-teste-pipeline-rag.md, seções 4 e 6.
+
+================================================================================
+FIM DA CONVERSAÇÃO
+================================================================================
+
+Nota: Esta transcrição é uma reconstituição das conversas conduzidas. Os prompts
+reais podem ter variado em formulação; o conteúdo essencial e as iterações
+descritas são fiéis ao processo utilizado.
