@@ -1,11 +1,11 @@
 # Exercício 2.2 — QA: Test Plan SDD (Query Endpoint)
 
-**Papel:** QA
-**Cenário:** 2 — Fase de Estruturação do Trabalho
-**Ferramentas usadas:** Claude (chat) + Claude Cowork
-**Data:** 2026-06-14
-**Versão:** 1.0
-**Status:** Entregável final
+> **Papel:** QA
+> **Cenário:** 2 — Fase de Estruturação do Trabalho
+> **Ferramentas usadas:** Claude (chat) + Claude Cowork
+> **Data:** 2026-06-14
+> **Versão:** 1.0
+> **Status:** Entregável final
 
 ---
 
