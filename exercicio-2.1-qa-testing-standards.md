@@ -2,10 +2,9 @@
 
 > **Papel:** QA  
 > **Cenário:** 2 — Fase de Estruturação do Trabalho  
-> **Ferramentas usadas:** Claude Code + Copilot  
+> **Ferramenta usada:** Claude (chat)  
 > **Data:** 2026-06-14  
-> **Versão:** 1.0  
-> **Status:** Entregável final
+> **Versão:** 1.0
 
 ---
 
