@@ -1,8 +1,8 @@
 # Exercício 3.2 — QA: Revisão Crítica dos Testes Gerados por IA
 
-> **Papel:** QA
-> **Cenário:** 3 — Fase de Governança e Validação
-> **Tópico:** Revisão Crítica de Outputs de IA
+> **Papel:** QA  
+> **Cenário:** 3 — Fase de Governança e Validação  
+> **Tópico:** Revisão Crítica de Outputs de IA  
 > **Ferramenta:** Claude (chat)
 
 ---
